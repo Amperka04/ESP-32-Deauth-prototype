@@ -16,7 +16,7 @@
 // ========== Настройки детектора ==========
 #define DEAUTH_THRESHOLD 10     // кол-во deauth-пакетов за секунду для срабатывания
 #define DETECTOR_CHANNEL 1      // стартовый канал
-#define CHANNEL_HOPPING true    // переключаться между каналами
+#define CHANNEL_HOPPING false    // переключаться между каналами
 #define MAX_CHANNEL 11          // максимальный канал
 
 // ========== Глобальные переменные ==========

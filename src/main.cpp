@@ -7,11 +7,11 @@
 #include "esp_wifi.h"
 
 // ========== Определение глобальных констант ==========
- const char* WIFI_SSID_SEND = "iPhone (97)";          // SSID сети, где находится Django
- const char* WIFI_PASSWORD_SEND = "12345678";   // Пароль
+ const char* WIFI_SSID_SEND = "";          // SSID сети, где находится Django
+ const char* WIFI_PASSWORD_SEND = "";   // Пароль
 
-const char* WIFI_SSID = "vivo X200 Ultra";          // SSID сети, где находится Django
-const char* WIFI_PASSWORD = "hyybtvrqknwm58e";   // Пароль
+const char* WIFI_SSID = "";          // SSID сети, где находится Django
+const char* WIFI_PASSWORD = "";   // Пароль
 
 const unsigned long WIFI_CONNECT_TIMEOUT_MS = 20000;
 

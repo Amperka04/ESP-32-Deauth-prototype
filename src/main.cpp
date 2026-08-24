@@ -10,8 +10,12 @@
  const char* WIFI_SSID_SEND = "";          // SSID сети, где находится Django
  const char* WIFI_PASSWORD_SEND = "";   // Пароль
 
+// const char* WIFI_SSID = "";          // SSID сети, где находится Django
+// const char* WIFI_PASSWORD = "";   // Пароль
+
 const char* WIFI_SSID = "";          // SSID сети, где находится Django
 const char* WIFI_PASSWORD = "";   // Пароль
+
 
 const unsigned long WIFI_CONNECT_TIMEOUT_MS = 20000;
 

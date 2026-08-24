@@ -16,7 +16,7 @@
 // ========== Настройки детектора ==========
 #define DEAUTH_THRESHOLD 10     // кол-во deauth-пакетов за секунду для срабатывания
 #define DETECTOR_CHANNEL 1      // стартовый канал
-#define CHANNEL_HOPPING false    // переключаться между каналами
+#define CHANNEL_HOPPING true    // переключаться между каналами
 #define MAX_CHANNEL 11          // максимальный канал
 
 // ========== Глобальные переменные ==========
@@ -122,6 +122,8 @@ DeauthAttackInfo updateDeauthDetector() {
     unsigned long currentTime = millis();
     DeauthAttackInfo info;
 
+    unsigned int currentPacketCount = packetCount; // сохраняем кол-во пакетов перед обнулением а
+
     if (currentTime - lastResetTime >= 1000) {
         if (packetCount >= DEAUTH_THRESHOLD) {
             attackFlag = true;
@@ -137,7 +139,7 @@ DeauthAttackInfo updateDeauthDetector() {
             }
         }
 
-        packetCount = 0;
+        packetCount = 0; // обнуление счётчика для следующей секунды
         lastResetTime = currentTime;
         switchChannel();
     }
@@ -145,7 +147,8 @@ DeauthAttackInfo updateDeauthDetector() {
     info.attackDetected = attackFlag;
     info.attackerMAC = attackerMAC;
     info.targetBSSID = targetBSSID;
-    info.packetCount = packetCount;
+    //info.packetCount = packetCount; // сюда прилетает 0 потому что обнулили
+    info.packetCount = currentPacketCount; // теперь прилетает сохраненное кол-во пакетов ура-ура поправили
     info.lastAttackTime = lastAttackDetectTime;
     return info;
 }

@@ -23,12 +23,12 @@ void sendToDjango(DeauthAttackInfo record) {
 
     HTTPClient http;
     WiFiClient client;
-    
+    // ссылка для отправки информации на сайт с django
     String url = "http://10.111.31.250:8000/api/add_attack/";
     http.begin(client, url);
     http.addHeader("Content-Type", "application/json");
     
-    // Формируем JSON (поле channel пока отсутствует)
+    // Формируем JSON
     String json = "{";
     json += "\"attacker_mac\":\"" + String(record.attackerMAC) + "\",";
     json += "\"target_bssid\":\"" + String(record.targetBSSID) + "\",";

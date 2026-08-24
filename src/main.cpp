@@ -3,32 +3,32 @@
 #include "globals.h"
 #include "wifi_manager.h"
 #include "deauth_detector.h"
+#include "telegram_notifier.h"
+#include "esp_wifi.h"
 
-// ДЛЯ ДОБАВЛЕНИЯ TELEGRAM-ОТПРАВКИ:
-// В функции loop() внутри блока if (info.attackDetected) вызовите
-// свою функцию sendTelegramAlert(), передав ей информацию об атаке.
-// ВНИМАНИЕ: перед отправкой нужно временно выйти из promiscuous-режима,
-// подключиться к Wi-Fi, отправить сообщение, затем снова войти в promiscuous.
-// См. пример в комментариях ниже.
+// ========== Определение глобальных констант ==========
+ const char* WIFI_SSID_SEND = "";          // SSID сети, где находится Django
+ const char* WIFI_PASSWORD_SEND = "";   // Пароль
 
-// ========== Определение глобальных констант (из globals.h) ==========
-const char* WIFI_SSID = ""; //имя сети       
-const char* WIFI_PASSWORD = ""; //пароль
+// const char* WIFI_SSID = "";          // SSID сети, где находится Django
+// const char* WIFI_PASSWORD = "";   // Пароль
+
+const char* WIFI_SSID = "";          // SSID сети, где находится Django
+const char* WIFI_PASSWORD = "";   // Пароль
+
+
 const unsigned long WIFI_CONNECT_TIMEOUT_MS = 20000;
 
-
-
-// ========== Настройка и главный цикл ==========
+// Флаг для однократной отправки за одну атаку
+static bool dataSent = false;
 
 void setup() {
     Serial.begin(115200);
     delay(1500);
     Serial.println("\n=== Запуск Deauth Detector (Pure Sniffer) ===");
 
-    // 1. Инициализация дисплея
     initDisplay();
-    
-    // 2. Показываем стартовый экран
+
     tft.fillScreen(TFT_BLACK);
     tft.setCursor(10, 10);
     tft.setTextColor(TFT_CYAN, TFT_BLACK);
@@ -43,10 +43,8 @@ void setup() {
     tft.println("(No WiFi connection)");
     delay(2000);
 
-    // 3. Инициализация детектора (отключает STA, включает сниффинг)
     initDeauthDetector();
-    
-    // Очищаем экран и показываем статус
+
     tft.fillScreen(TFT_BLACK);
     tft.setCursor(10, 10);
     tft.setTextColor(TFT_GREEN, TFT_BLACK);
@@ -61,10 +59,10 @@ void setup() {
 }
 
 void loop() {
-    // Обновляем состояние детектора
     DeauthAttackInfo info = updateDeauthDetector();
-    
+
     if (info.attackDetected) {
+        // Отображаем предупреждение на экране
         tft.fillScreen(TFT_BLACK);
         tft.setTextColor(TFT_RED, TFT_BLACK);
         tft.setTextSize(3);
@@ -82,26 +80,31 @@ void loop() {
         tft.print("Packets: ");
         tft.println(info.packetCount);
 
-        // ========== ВСТАВИТЬ ОТПРАВКУ В TELEGRAM ==========
-        // TODO: Вызвать функцию отправки уведомления в Telegram.
-        // Пример:
-        // if (sendTelegramAlert(info.attackerMAC, info.targetBSSID, info.packetCount)) {
-        //     Serial.println("[Telegram] Уведомление отправлено.");
-        // }
-        // ВАЖНО: перед отправкой необходимо:
-        //   1. Выйти из promiscuous-режима: esp_wifi_set_promiscuous(false);
-        //   2. Подключиться к Wi-Fi (connectToWiFi()).
-        //   3. Отправить сообщение через HTTPS POST к API Telegram.
-        //   4. Отключиться от Wi-Fi и снова войти в promiscuous (initDeauthDetector()).
-        // ==================================================
+        // Отправляем данные только один раз за атаку
+        if (!dataSent) {
+            Serial.println("[Main] Обнаружена атака! Выход из promiscuous...");
+            esp_wifi_set_promiscuous(false);
+            delay(200); // даём время на переключение режима
 
+            Serial.println("[Main] Отправка данных на Django...");
+            connectToWiFi();
+            sendToDjango(info);
+            Serial.println("[Main] Отправка завершена.");
 
-        // можно добавить файлы типо telegram_notifier.h и telegram_notifier.cpp для ТГ бота
-        // Также нужно будет добавить библиотеку в файле platformio.ini для взаимодействия с ТГ, 
-        // например FastBot2 (предпочтительнее) или UniversalTelegramBot 
-
+            // Отключаем Wi-Fi, чтобы не мешал, и возвращаемся в promiscuous
+            WiFi.disconnect(true);
+            delay(100);
+            esp_wifi_set_promiscuous(true);
+            Serial.println("[Main] Promiscuous-режим восстановлен.");
+            dataSent = true;
+        }
     } else {
-        // Показываем статус и текущий канал (обновляем раз в секунду)
+        // Если атака закончилась, сбрасываем флаг для следующей атаки
+        if (dataSent) {
+            dataSent = false;
+        }
+
+        // Показываем статус сканирования
         static unsigned long lastUpdate = 0;
         if (millis() - lastUpdate > 1000) {
             tft.fillScreen(TFT_BLACK);
@@ -120,5 +123,5 @@ void loop() {
             lastUpdate = millis();
         }
     }
-    delay(100); // Небольшая задержка для снижения нагрузки на процессор
+    delay(100);
 }

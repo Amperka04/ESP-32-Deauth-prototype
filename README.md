@@ -76,7 +76,7 @@ ESP-32-Deauth-prototype/
 │   ├── display.h / .cpp       # Модуль управления TFT-дисплеем
 │   ├── wifi_manager.h / .cpp  # Подключение к Wi-Fi, сканирование сетей
 │   ├── deauth_detector.h / .cpp  # Ядро проекта: сниффинг и детекция атак
-│   └── telegram_notifier.h / .cpp # Отправка данных на Django-сервер
+│   └── alert_notifier.h / .cpp # Отправка данных на Django-сервер
 ├── platformio.ini             # Конфигурация PlatformIO
 └── README.md                  # Этот файл
 ```
@@ -90,7 +90,7 @@ ESP-32-Deauth-prototype/
 | `display`           | Включение питания LCD (GPIO15), настройка ШИМ подсветки (GPIO38), инициализация TFT_eSPI         |
 | `wifi_manager`      | Функции `connectToWiFi()` и `connectToWiFiForSend()` для подключения к разным сетям              |
 | `deauth_detector`   | Promiscuous-режим, callback-обработчик пакетов, парсинг 802.11, счётчик, channel hopping         |
-| `telegram_notifier` | HTTP POST-запрос к Django API с JSON-данными об атаке                                            |
+| `alert_notifier` | HTTP POST-запрос к Django API с JSON-данными об атаке                                            |
 
 ---
 
@@ -162,7 +162,7 @@ esp_wifi_set_promiscuous_rx_cb(wifiSnifferCallback);
    const char* WIFI_PASSWORD_SEND = "пароль_сети_сервера";
    ```
 
-4. **Укажите адрес Django-сервера** в `src/telegram_notifier.cpp`:
+4. **Укажите адрес Django-сервера** в `src/alert_notifier.cpp`:
    ```cpp
    String url = "http://10.111.31.250:8000/api/add_attack/";
    ```
@@ -227,7 +227,7 @@ esp_wifi_set_promiscuous_rx_cb(wifiSnifferCallback);
 | `display.h / .cpp`           | Работа с TFT-экраном (питание, подсветка, инициализация) |
 | `wifi_manager.h / .cpp`      | Подключение к Wi-Fi (две функции для двух сетей)         |
 | `deauth_detector.h / .cpp`   | Ядро: promiscuous-режим, парсинг 802.11, детекция атак   |
-| `telegram_notifier.h / .cpp` | HTTP-клиент для отправки данных на Django                |
+| `alert_notifier.h / .cpp`    | HTTP-клиент для отправки данных на Django                |
 
 ---
 

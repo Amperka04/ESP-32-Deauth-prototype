@@ -3,7 +3,7 @@
 #include "globals.h"
 #include "wifi_manager.h"
 #include "deauth_detector.h"
-#include "telegram_notifier.h"
+#include "alert_notifier.h" // <-- ИЗМЕНЕНО
 #include "esp_wifi.h"
 
 // ========== Определение глобальных констант ==========

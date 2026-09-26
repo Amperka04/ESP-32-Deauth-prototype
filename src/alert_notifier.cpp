@@ -1,4 +1,4 @@
-#include "telegram_notifier.h"
+#include "alert_notifier.h"
 #include "globals.h"
 #include "wifi_manager.h"
 #include <HTTPClient.h>
@@ -14,9 +14,9 @@
 void sendToDjango(DeauthAttackInfo record) {
     // Проверяем подключение к Wi-Fi, при необходимости подключаемся
     if (WiFi.status() != WL_CONNECTED) {
-        Serial.println("[Telegram] Wi-Fi не подключён. Подключаюсь...");
+        Serial.println("[Alert] Wi-Fi не подключён. Подключаюсь...");
         if (!connectToWiFi()) {
-            Serial.println("[Telegram] Ошибка подключения к Wi-Fi. Отправка невозможна.");
+            Serial.println("[Alert] Ошибка подключения к Wi-Fi. Отправка невозможна.");
             return;
         }
     }
@@ -35,13 +35,13 @@ void sendToDjango(DeauthAttackInfo record) {
     json += "\"packet_count\":" + String(record.packetCount);
     json += "}";
     
-    Serial.println("[Telegram] Отправка JSON: " + json);
+    Serial.println("[Alert] Отправка JSON: " + json);
     
     int code = http.POST(json);
     if (code == 201) {
-        Serial.println("[Telegram] Атака сохранена в Django!");
+        Serial.println("[Alert] Атака сохранена в Django!");
     } else {
-        Serial.println("[Telegram] Ошибка: " + String(code) + " - " + http.errorToString(code));
+        Serial.println("[Alert] Ошибка: " + String(code) + " - " + http.errorToString(code));
     }
     http.end();
 }

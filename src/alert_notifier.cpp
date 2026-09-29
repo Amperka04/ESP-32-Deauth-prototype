@@ -21,6 +21,23 @@ void sendToDjango(DeauthAttackInfo record) {
         }
     }
 
+#if TEST_MODE
+    // ========== ТЕСТОВЫЙ РЕЖИМ ==========
+    Serial.println("[Alert] ========== ТЕСТОВЫЙ РЕЖИМ ==========");
+    Serial.println("[Alert] Формирование JSON для отправки:");
+    
+    // Формируем JSON (для показа в Serial)
+    String json = "{";
+    json += "\"attacker_mac\":\"" + String(record.attackerMAC) + "\",";
+    json += "\"target_bssid\":\"" + String(record.targetBSSID) + "\",";
+    json += "\"packet_count\":" + String(record.packetCount);
+    json += "}";
+    
+    Serial.println("[Alert] Отправка JSON: " + json);
+    delay(500);
+    Serial.println("[Alert] Атака сохранена в Django!");
+
+#else
     HTTPClient http;
     WiFiClient client;
     // ссылка для отправки информации на сайт с django
@@ -44,4 +61,6 @@ void sendToDjango(DeauthAttackInfo record) {
         Serial.println("[Alert] Ошибка: " + String(code) + " - " + http.errorToString(code));
     }
     http.end();
+
+#endif
 }

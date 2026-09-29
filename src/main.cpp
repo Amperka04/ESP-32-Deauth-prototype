@@ -3,21 +3,18 @@
 #include "globals.h"
 #include "wifi_manager.h"
 #include "deauth_detector.h"
-#include "alert_notifier.h" // <-- ИЗМЕНЕНО
+#include "alert_notifier.h"
 #include "esp_wifi.h"
 
 // ========== Определение глобальных констант ==========
- const char* WIFI_SSID_SEND = "";          // SSID сети, где находится Django
- const char* WIFI_PASSWORD_SEND = "";   // Пароль
+ const char* WIFI_SSID_SEND = "";// SSID сети, где находится Django
+ const char* WIFI_PASSWORD_SEND = "";// Пароль
 
-// const char* WIFI_SSID = "";          // SSID сети, где находится Django
-// const char* WIFI_PASSWORD = "";   // Пароль
-
-const char* WIFI_SSID = "";          // SSID сети, где находится Django
-const char* WIFI_PASSWORD = "";   // Пароль
+const char* WIFI_SSID = "";// SSID сети, где находится Django
+const char* WIFI_PASSWORD = "";// Пароль
 
 
-const unsigned long WIFI_CONNECT_TIMEOUT_MS = 20000;
+const unsigned long WIFI_CONNECT_TIMEOUT_MS = 5000;
 
 // Флаг для однократной отправки за одну атаку
 static bool dataSent = false;
